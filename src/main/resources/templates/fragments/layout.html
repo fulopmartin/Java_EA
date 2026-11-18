@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Pénzügyi Portál - Beadandó</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/aos.css}" rel="stylesheet"/>
+    <link th:href="@{/css/swiper-bundle.min.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/all.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/magnific-popup.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+
+<body>
+
+<div th:fragment="navbar">
+    <nav id="nbar">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <a th:href="@{/}" class="d-flex align-items-center gap-2" style="font-size:1.2rem;font-weight:700;color:var(--tx);text-decoration:none">
+                    <div class="logo-i"><i class="fa-solid fa-layer-group"></i></div>
+                    <span>FinNexus</span>
+                </a>
+                <div class="d-none d-lg-flex align-items-center gap-1 mx-auto">
+                    <a th:href="@{/}" class="nav-link">Főoldal</a>
+                    <a th:href="@{/soap}" class="nav-link">SOAP (MNB)</a>
+                    <a th:href="@{/forex-account}" class="nav-link">Forex-account</a>
+                    <a th:href="@{/forex-aktar}" class="nav-link">Forex-AktÁr</a>
+                    <a th:href="@{/forex-histar}" class="nav-link">Forex-HistÁr</a>
+                    <a th:href="@{/forex-nyit}" class="nav-link">Forex-Nyit</a>
+                    <a th:href="@{/forex-poz}" class="nav-link">Forex-Poz</a>
+                    <a th:href="@{/forex-zar}" class="nav-link">Forex-Zár</a>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="boc d-flex align-items-center justify-content-center" id="thbtn" style="width:38px;height:38px;padding:0;border-radius:12px" aria-label="Toggle theme">
+                        <i class="fa-solid fa-sun" id="suni" style="display:none"></i>
+                        <i class="fa-solid fa-moon" id="mooni"></i>
+                    </button>
+                    <button class="boc d-lg-none px-2 py-2" id="mbtog" style="border-radius:10px">
+                        <i class="fa-solid fa-bars" id="barIcon"></i>
+                        <i class="fa-solid fa-xmark" id="xIcon" style="display:none"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mbmenu">
+        <a th:href="@{/}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Főoldal</a>
+        <a th:href="@{/soap}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">SOAP (MNB)</a>
+        <a th:href="@{/forex-account}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Forex-account</a>
+        <a th:href="@{/forex-aktar}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Forex-AktÁr</a>
+        <a th:href="@{/forex-histar}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Forex-HistÁr</a>
+        <a th:href="@{/forex-nyit}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Forex-Nyit</a>
+        <a th:href="@{/forex-poz}" class="nav-link d-block py-3 border-bottom" style="border-color:var(--bd)!important">Forex-Poz</a>
+        <a th:href="@{/forex-zar}" class="nav-link d-block py-3">Forex-Zár</a>
+    </div>
+</div>
+
+<!-- KÖZÖS LÁBLÉC (Minden oldal alján - Kötelező elem!) -->
+<footer th:fragment="footer" id="foot" class="mt-5">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pt-4" style="border-top:1px solid var(--bd)">
+            <div class="d-flex align-items-center gap-2" style="font-weight:700;color:var(--tx)">
+                <div class="logo-i" style="width:28px;height:28px;font-size:.8rem"><i class="fa-solid fa-layer-group"></i></div>
+                <span>FinNexus &bull; Java 25 &amp; Spring Boot</span>
+            </div>
+            <p style="font-size:.9rem;color:var(--tx2);margin:0">
+                Készítette: <strong style="color:var(--tx)">Fülöp Martin - EMD87F</strong> &amp; <strong style="color:var(--tx)">Elek Dániel - XZN3PZ</strong>
+            </p>
+        </div>
+    </div>
+</footer>
+<div th:fragment="scripts">
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/aos.js}"></script>
+    <script th:src="@{/js/chart.umd.min.js}"></script>
+    <script th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</div>
+</body>
+</html>
