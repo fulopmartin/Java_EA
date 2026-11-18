@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('MNB SOAP Árfolyamok - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <div class="text-center mb-4">
+                <span class="slbl">MNB Webszolgáltatás</span>
+                <h2 class="stitle">Hivatalos <span class="gt">MNB SOAP Árfolyamok</span></h2>
+            </div>
+
+            <div class="gc p-4 mb-4">
+                <form th:action="@{/soap}" method="post" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="olbl">Devizanem</label>
+                        <select name="currency" class="oinp mb-0">
+                            <option value="EUR" th:selected="${selectedCurrency == 'EUR'}">EUR - Euró</option>
+                            <option value="USD" th:selected="${selectedCurrency == 'USD'}">USD - Amerikai dollár</option>
+                            <option value="GBP" th:selected="${selectedCurrency == 'GBP'}">GBP - Angol font</option>
+                            <option value="CHF" th:selected="${selectedCurrency == 'CHF'}">CHF - Svájci frank</option>
+                            <option value="JPY" th:selected="${selectedCurrency == 'JPY'}">JPY - Japán jen</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="olbl">Kezdő dátum</label>
+                        <input type="date" name="startDate" th:value="${startDate}" class="oinp mb-0" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="olbl">Záró dátum</label>
+                        <input type="date" name="endDate" th:value="${endDate}" class="oinp mb-0" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="bgrd btn w-100 py-3 fw-semibold">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Lekérdezés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="row g-4" th:if="${adatok != null and !adatok.isEmpty()}">
+                <div class="col-lg-8">
+                    <div class="gc p-4 h-100">
+                        <h5 class="fw-semibold mb-3">
+                            <i class="fa-solid fa-chart-line me-2" style="color:var(--pur)"></i>
+                            <span th:text="${selectedCurrency + ' / HUF árfolyam alakulása'}"></span>
+                        </h5>
+                        <canvas id="mnbChart" height="140"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="gc p-4 h-100">
+                        <h5 class="fw-semibold mb-3"><i class="fa-solid fa-table me-2" style="color:var(--pur)"></i>Napi adatok</h5>
+                        <div style="max-height:360px;overflow-y:auto">
+                            <table class="db-table">
+                                <thead>
+                                <tr>
+                                    <th>Dátum</th>
+                                    <th class="text-end">Árfolyam (HUF)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="sor : ${adatok}">
+                                    <td th:text="${sor.datum}"></td>
+                                    <td class="text-end fw-semibold" th:text="${sor.ertek + ' Ft'}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script th:inline="javascript" th:if="${adatok != null and !adatok.isEmpty()}">
+    const labels = /*[[${dates}]]*/ [];
+    const dataValues = /*[[${rates}]]*/ [];
+    const currencyLabel = /*[[${selectedCurrency}]]*/ 'EUR';
+
+    const ctx = document.getElementById('mnbChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: currencyLabel + ' (HUF)',
+                data: dataValues,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                borderWidth: 2.5,
+                pointRadius: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: '#9ca3af' } }
+            },
+            scales: {
+                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+</script>
+</body>
+</html>
