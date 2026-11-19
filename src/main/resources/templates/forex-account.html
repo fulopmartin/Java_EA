@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex Számlainformációk - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <div class="text-center mb-4">
+                <span class="slbl">Oanda v20 REST API</span>
+                <h2 class="stitle">Forex <span class="gt">Számlainformációk</span></h2>
+                <p class="ssub mx-auto">A csatlakoztatott Oanda Practice kereskedési számla aktuális egyenlege és fedezeti adatai.</p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="row justify-content-center" th:if="${accountInfo != null}">
+                <div class="col-lg-8">
+                    <div class="gc p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-semibold mb-0">
+                                <i class="fa-solid fa-wallet me-2" style="color:var(--pur)"></i>Számla összesítő
+                            </h5>
+                            <span class="bst son">Practice / Demo</span>
+                        </div>
+                        <table class="db-table">
+                            <thead>
+                            <tr>
+                                <th>Paraméter</th>
+                                <th class="text-end">Érték</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="entry : ${accountInfo}">
+                                <td th:text="${entry.key}" style="color:var(--tx2)"></td>
+                                <td class="text-end fw-semibold" th:text="${entry.value}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
