@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex Aktuális Ár - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <div class="text-center mb-4">
+                <span class="slbl">Oanda v20 REST API</span>
+                <h2 class="stitle">Forex <span class="gt">Aktuális Ár</span></h2>
+                <p class="ssub mx-auto">Válasszon ki egy devizapárt a lenyíló listából az élő Bid és Ask árfolyam lekérdezéséhez.</p>
+            </div>
+
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-6">
+                    <div class="gc p-4">
+                        <form th:action="@{/forex-aktar}" method="get" class="row g-3 align-items-end">
+                            <div class="col-md-8">
+                                <label for="instrument" class="form-label fw-semibold" style="color:var(--tx2)">
+                                    Instrumentum kiválasztása
+                                </label>
+                                <select id="instrument" name="instrument" class="form-select bg-dark text-light border-secondary">
+                                    <option th:each="inst : ${instruments}"
+                                            th:value="${inst}"
+                                            th:text="${inst}"
+                                            th:selected="${inst == selectedInstrument}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100" style="background:var(--pur);border:none;">
+                                    <i class="fa-solid fa-magnifying-glass-dollar me-1"></i> Lekérdezés
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" th:if="${error}">
+                <div class="col-lg-6">
+                    <div class="alert alert-danger" th:text="${error}"></div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" th:if="${priceInfo != null}">
+                <div class="col-lg-6">
+                    <div class="gc p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-semibold mb-0">
+                                <i class="fa-solid fa-chart-line me-2" style="color:var(--pur)"></i>Élő piaci jegyzés
+                            </h5>
+                            <span class="bst son" th:text="${selectedInstrument}">EUR_USD</span>
+                        </div>
+                        <table class="db-table">
+                            <thead>
+                            <tr>
+                                <th>Adat</th>
+                                <th class="text-end">Érték</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="entry : ${priceInfo}">
+                                <td th:text="${entry.key}" style="color:var(--tx2)"></td>
+                                <td class="text-end fw-semibold" th:text="${entry.value}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

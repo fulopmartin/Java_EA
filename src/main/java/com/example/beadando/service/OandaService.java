@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -24,6 +26,21 @@ public class OandaService {
                 .build();
         this.apiToken = apiToken;
         this.accountId = accountId;
+    }
+
+    public List<String> getInstruments() {
+        return List.of(
+                "EUR_USD",
+                "GBP_USD",
+                "USD_JPY",
+                "EUR_HUF",
+                "USD_HUF",
+                "GBP_HUF",
+                "USD_CHF",
+                "AUD_USD",
+                "USD_CAD",
+                "EUR_GBP"
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -55,5 +72,55 @@ public class OandaService {
         adatok.put("Függő megbízások (Pending Orders)", String.valueOf(account.getOrDefault("pendingOrderCount", "0")));
 
         return adatok;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getCurrentPrice(String instrument) {
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/accounts/{accountId}/pricing")
+                        .queryParam("instruments", instrument)
+                        .build(accountId))
+                .header("Authorization", "Bearer " + apiToken)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        if (response == null || !response.containsKey("prices")) {
+            throw new RuntimeException("Nem érkezett árfolyamadat az Oanda API-tól.");
+        }
+
+        List<?> prices = (List<?>) response.get("prices");
+        if (prices == null || prices.isEmpty()) {
+            throw new RuntimeException("Nem található árfolyam a kiválasztott instrumentumhoz: " + instrument);
+        }
+
+        Map<String, Object> priceData = (Map<String, Object>) prices.get(0);
+        List<?> bids = (List<?>) priceData.get("bids");
+        List<?> asks = (List<?>) priceData.get("asks");
+
+        String bidStr = (bids != null && !bids.isEmpty())
+                ? String.valueOf(((Map<?, ?>) bids.get(0)).get("price"))
+                : String.valueOf(priceData.getOrDefault("closeoutBid", "-"));
+        String askStr = (asks != null && !asks.isEmpty())
+                ? String.valueOf(((Map<?, ?>) asks.get(0)).get("price"))
+                : String.valueOf(priceData.getOrDefault("closeoutAsk", "-"));
+        String spreadStr = "-";
+
+        try {
+            double bidVal = Double.parseDouble(bidStr);
+            double askVal = Double.parseDouble(askStr);
+            spreadStr = String.format(Locale.US, "%.5f", askVal - bidVal);
+        } catch (NumberFormatException ignored) {
+        }
+
+        Map<String, String> arfolyam = new LinkedHashMap<>();
+        arfolyam.put("Instrumentum", String.valueOf(priceData.getOrDefault("instrument", instrument)));
+        arfolyam.put("Vételi ár (Bid)", bidStr);
+        arfolyam.put("Eladási ár (Ask)", askStr);
+        arfolyam.put("Spread (Ask - Bid)", spreadStr);
+        arfolyam.put("Státusz", String.valueOf(priceData.getOrDefault("status", "-")));
+        arfolyam.put("Időbélyeg (UTC)", String.valueOf(priceData.getOrDefault("time", "-")));
+
+        return arfolyam;
     }
 }
