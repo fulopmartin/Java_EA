@@ -11,7 +11,6 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Controller
 public class ForexController {
@@ -102,30 +101,21 @@ public class ForexController {
 
         try {
             OandaService.OpenTradeResult trade = oandaService.openMarketTrade(instrument, quantity);
-            if (trade == null) {
-                redirect.addFlashAttribute("error", "Az OANDA nem igazolta vissza a pozíció megnyitását.");
-            } else {
+            if (trade != null) {
                 redirect.addFlashAttribute("success",
                         "Sikeres nyitás. Trade ID: " + trade.tradeID()
                                 + ", teljesítési ár: " + trade.price());
-            }
-        } catch (RestClientException e) {
-            if (e instanceof RestClientResponseException response) {
-                System.err.println("OANDA nyitás – HTTP " + response.getStatusCode().value());
-
-                var reason = Pattern.compile("\"(?:rejectReason|errorCode)\"\\s*:\\s*\"([A-Z0-9_]+)\"")
-                        .matcher(response.getResponseBodyAsString());
-
-                while (reason.find()) {
-                    System.err.println("OANDA nyitás – ok: " + reason.group(1));
-                }
             } else {
-                System.err.println("OANDA nyitás – "
-                        + e.getMostSpecificCause().getClass().getSimpleName());
+                redirect.addFlashAttribute("error",
+                        "Az OANDA válasza nem igazolt vissza megnyitott ügyletet.");
             }
-
+        } catch (RestClientResponseException e) {
             redirect.addFlashAttribute("error",
-                    "A nyitást nem sikerült visszaigazolni. Újrapróbálás előtt ellenőrizd az OANDA-fiókot.");
+                    "OANDA HTTP " + e.getStatusCode().value()
+                            + ". Újrapróbálás előtt ellenőrizd az ügyleteket a gyakorlófiókban.");
+        } catch (RestClientException e) {
+            redirect.addFlashAttribute("error",
+                    "Hiba történt az OANDA-kérésnél. Újrapróbálás előtt ellenőrizd az ügyleteket.");
         }
 
         return "redirect:/forex-nyit";

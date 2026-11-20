@@ -2,6 +2,7 @@ package com.example.beadando.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -123,6 +124,7 @@ public class OandaService {
 
         return arfolyam;
     }
+
     public List<HistoricalCandle> getHistoricalPrices(String instrument, String granularity) {
         CandlesResponse response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -146,6 +148,7 @@ public class OandaService {
 
     public record MidPrice(String c) {
     }
+
     public OpenTradeResult openMarketTrade(String instrument, long units) {
         Map<String, String> order = Map.of(
                 "instrument", instrument,
@@ -158,12 +161,12 @@ public class OandaService {
         MarketOrderResponse response = restClient.post()
                 .uri("/accounts/{accountId}/orders", accountId)
                 .header("Authorization", "Bearer " + apiToken)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("order", order))
                 .retrieve()
                 .body(MarketOrderResponse.class);
 
-        if (response == null || response.orderFillTransaction() == null
-                || response.orderFillTransaction().tradeOpened() == null) {
+        if (response == null || response.orderFillTransaction() == null) {
             return null;
         }
 
