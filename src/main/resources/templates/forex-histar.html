@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex Historikus Ár - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <h1 class="stitle text-center mb-4">Forex <span class="gt">Historikus árak</span></h1>
+
+            <div class="gc p-4 mb-4">
+                <form th:action="@{/forex-histar}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label for="instrument" class="form-label">Instrumentum</label>
+                        <select id="instrument" name="instrument"
+                                class="form-select bg-dark text-light border-secondary">
+                            <option th:each="inst : ${instruments}"
+                                    th:value="${inst}"
+                                    th:text="${inst}"
+                                    th:selected="${inst == selectedInstrument}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label for="granularity" class="form-label">Időfelbontás</label>
+                        <select id="granularity" name="granularity"
+                                class="form-select bg-dark text-light border-secondary">
+                            <option value="M1" th:selected="${selectedGranularity == 'M1'}">M1 – 1 perc</option>
+                            <option value="H1" th:selected="${selectedGranularity == 'H1'}">H1 – 1 óra</option>
+                            <option value="D" th:selected="${selectedGranularity == 'D'}">D – 1 nap</option>
+                            <option value="W" th:selected="${selectedGranularity == 'W'}">W – 1 hét</option>
+                            <option value="M" th:selected="${selectedGranularity == 'M'}">M – 1 hónap</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100"
+                                style="background:var(--pur);border:none;">
+                            Lekérdezés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+            <div th:if="${candles != null and candles.isEmpty()}" class="alert alert-info">
+                Az OANDA nem adott vissza historikus árakat ehhez a kiválasztáshoz.
+            </div>
+
+            <div th:if="${candles != null and !candles.isEmpty()}" class="gc p-4">
+                <h2 class="h5 mb-3" th:text="|${selectedInstrument} ${selectedGranularity}|">
+                    EUR_USD · D
+                </h2>
+                <div class="table-responsive">
+                    <table class="db-table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Időszak kezdete (UTC)</th>
+                            <th scope="col" class="text-end">Záró középár</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="candle : ${candles}">
+                            <td>
+                                <span th:text="${candle.time()}"></span>
+                                <small th:unless="${candle.complete()}">(folyamatban)</small>
+                            </td>
+                            <td class="text-end" th:text="${candle.mid().c()}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

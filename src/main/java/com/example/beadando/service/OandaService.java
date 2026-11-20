@@ -123,4 +123,27 @@ public class OandaService {
 
         return arfolyam;
     }
+    public List<HistoricalCandle> getHistoricalPrices(String instrument, String granularity) {
+        CandlesResponse response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/instruments/{instrument}/candles")
+                        .queryParam("granularity", granularity)
+                        .queryParam("count", 10)
+                        .queryParam("price", "M")
+                        .build(instrument))
+                .header("Authorization", "Bearer " + apiToken)
+                .retrieve()
+                .body(CandlesResponse.class);
+
+        return response == null || response.candles() == null ? List.of() : response.candles();
+    }
+
+    private record CandlesResponse(List<HistoricalCandle> candles) {
+    }
+
+    public record HistoricalCandle(String time, MidPrice mid, boolean complete) {
+    }
+
+    public record MidPrice(String c) {
+    }
 }
