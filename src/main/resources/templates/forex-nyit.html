@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex Nyitás - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <h1 class="stitle text-center mb-4">
+                Forex <span class="gt">Pozíciónyitás</span>
+            </h1>
+
+            <div th:if="${success}" class="alert alert-success" role="status"
+                 th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" role="alert"
+                 th:text="${error}"></div>
+
+            <div class="gc p-4">
+                <form th:action="@{/forex-nyit}" method="post" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="instrument" class="form-label">Instrumentum</label>
+                        <select id="instrument" name="instrument" required
+                                class="form-select bg-dark text-light border-secondary">
+                            <option th:each="inst : ${instruments}"
+                                    th:value="${inst}" th:text="${inst}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="units" class="form-label">Mennyiség</label>
+                        <input id="units" name="units" type="number" step="1" required
+                               aria-describedby="units-help"
+                               class="form-control bg-dark text-light border-secondary">
+                        <div id="units-help" class="form-text text-light">
+                            Pozitív egész: Long. Negatív egész: Short.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            Megnyitás piaci áron
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -146,4 +146,36 @@ public class OandaService {
 
     public record MidPrice(String c) {
     }
+    public OpenTradeResult openMarketTrade(String instrument, long units) {
+        Map<String, String> order = Map.of(
+                "instrument", instrument,
+                "units", Long.toString(units),
+                "type", "MARKET",
+                "timeInForce", "FOK",
+                "positionFill", "OPEN_ONLY"
+        );
+
+        MarketOrderResponse response = restClient.post()
+                .uri("/accounts/{accountId}/orders", accountId)
+                .header("Authorization", "Bearer " + apiToken)
+                .body(Map.of("order", order))
+                .retrieve()
+                .body(MarketOrderResponse.class);
+
+        if (response == null || response.orderFillTransaction() == null
+                || response.orderFillTransaction().tradeOpened() == null) {
+            return null;
+        }
+
+        return response.orderFillTransaction().tradeOpened();
+    }
+
+    private record MarketOrderResponse(OrderFill orderFillTransaction) {
+    }
+
+    private record OrderFill(OpenTradeResult tradeOpened) {
+    }
+
+    public record OpenTradeResult(String tradeID, String price) {
+    }
 }
