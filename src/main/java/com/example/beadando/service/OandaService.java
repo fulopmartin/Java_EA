@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Service
 public class OandaService {
@@ -180,5 +181,32 @@ public class OandaService {
     }
 
     public record OpenTradeResult(String tradeID, String price) {
+    }
+    public List<OpenPosition> getOpenPositions() {
+        OpenPositionsResponse response = restClient.get()
+                .uri("/accounts/{accountId}/openPositions", accountId)
+                .header("Authorization", "Bearer " + apiToken)
+                .retrieve()
+                .body(OpenPositionsResponse.class);
+
+        if (response == null || response.positions() == null) {
+            throw new org.springframework.web.client.RestClientException(
+                    "Az OANDA válaszából hiányzik a pozíciólista.");
+        }
+
+        return response.positions();
+    }
+
+    private record OpenPositionsResponse(List<OpenPosition> positions) {
+    }
+
+    public record OpenPosition(
+            String instrument,
+            @JsonProperty("long") PositionSide longSide,
+            @JsonProperty("short") PositionSide shortSide,
+            String unrealizedPL) {
+    }
+
+    public record PositionSide(String units, List<String> tradeIDs) {
     }
 }

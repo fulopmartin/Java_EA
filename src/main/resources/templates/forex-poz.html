@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex Nyitott Pozíciók - Beadandó')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <section class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <h1 class="stitle text-center mb-4">
+                Forex <span class="gt">Nyitott pozíciók</span>
+            </h1>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert"
+                 th:text="${error}"></div>
+
+            <div th:if="${positions != null and positions.isEmpty()}"
+                 class="alert alert-info">
+                Jelenleg nincs nyitott pozíció a számlán.
+            </div>
+
+            <div th:if="${positions != null and !positions.isEmpty()}"
+                 class="gc p-4 table-responsive">
+                <table class="db-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Instrumentum</th>
+                        <th scope="col">Long mennyiség</th>
+                        <th scope="col">Short mennyiség</th>
+                        <th scope="col">Nem realizált eredmény</th>
+                        <th scope="col">Trade ID-k</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="position : ${positions}">
+                        <th scope="row" th:text="${position.instrument()}"></th>
+                        <td th:text="${position.longSide().units()}"></td>
+                        <td th:text="${position.shortSide().units()}"></td>
+                        <td th:text="${position.unrealizedPL()}"></td>
+                        <td>
+                            <span th:each="id : ${position.longSide().tradeIDs()}"
+                                  class="me-2" th:text="${id}"></span>
+                            <span th:each="id : ${position.shortSide().tradeIDs()}"
+                                  class="me-2" th:text="${id}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

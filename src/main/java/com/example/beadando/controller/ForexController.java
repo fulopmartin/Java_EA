@@ -120,4 +120,19 @@ public class ForexController {
 
         return "redirect:/forex-nyit";
     }
+
+    @GetMapping("/forex-poz")
+    public String forexPoz(Model model) {
+        try {
+            model.addAttribute("positions", oandaService.getOpenPositions());
+        } catch (RestClientResponseException e) {
+            model.addAttribute("error",
+                    "Az OANDA nem tudta lekérni a nyitott pozíciókat. HTTP "
+                            + e.getStatusCode().value() + ".");
+        } catch (RestClientException e) {
+            model.addAttribute("error", "Nem sikerült lekérni a nyitott pozíciókat.");
+        }
+
+        return "forex-poz";
+    }
 }
