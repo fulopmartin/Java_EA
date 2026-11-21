@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Forex eredménykalkulátor')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <h1 class="stitle text-center mb-4">Forex eredménykalkulátor</h1>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert"
+                 th:text="${error}"></div>
+
+            <div th:if="${result != null}" class="alert alert-success" role="status">
+                Bruttó eredmény a jegyzett devizában:
+                <strong th:text="${result}"></strong>
+            </div>
+
+            <form th:action="@{/teszt}" method="post" class="gc p-4 row g-3">
+                <div class="col-md-6">
+                    <label for="openingPrice" class="form-label">Nyitóár</label>
+                    <input id="openingPrice" name="openingPrice" type="number"
+                           min="0" step="any" required class="form-control"
+                           th:value="${openingPrice}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="closingPrice" class="form-label">Záróár</label>
+                    <input id="closingPrice" name="closingPrice" type="number"
+                           min="0" step="any" required class="form-control"
+                           th:value="${closingPrice}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="units" class="form-label">Mennyiség</label>
+                    <input id="units" name="units" type="number"
+                           min="1" step="1" required class="form-control"
+                           th:value="${units}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="direction" class="form-label">Irány</label>
+                    <select id="direction" name="direction" class="form-select">
+                        <option value="LONG" th:selected="${direction == 'LONG'}">Long</option>
+                        <option value="SHORT" th:selected="${direction == 'SHORT'}">Short</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Számítás</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
