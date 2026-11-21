@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="hu" id="htmlRoot">
+<head th:replace="~{fragments/layout :: head('Hulladéktípusok')}"></head>
+<body>
+<div id="landing">
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <main class="sp" style="padding-top:120px;min-height:85vh">
+        <div class="container">
+            <h1 class="stitle mb-4">Hulladéktípusok</h1>
+            <div id="react-root" th:data-api-url="@{/api/szolgaltatasok}"></div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script type="module" th:src="@{/react-app/react-crud.js}"></script>
+</body>
+</html>
