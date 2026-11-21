@@ -135,4 +135,38 @@ public class ForexController {
 
         return "forex-poz";
     }
+
+    @GetMapping("/forex-zar")
+    public String forexZar() {
+        return "forex-zar";
+    }
+
+    @PostMapping("/forex-zar")
+    public String forexZarSubmit(@RequestParam(name = "tradeId", defaultValue = "") String tradeId,
+                                 RedirectAttributes redirect) {
+        String id = tradeId.trim();
+
+        if (!id.matches("[1-9][0-9]*")) {
+            redirect.addFlashAttribute("error", "A Trade ID pozitív egész szám legyen.");
+            return "redirect:/forex-zar";
+        }
+
+        try {
+            if (oandaService.closeTrade(id)) {
+                redirect.addFlashAttribute("success", "Sikeres zárás. Trade ID: " + id);
+            } else {
+                redirect.addFlashAttribute("error",
+                        "Az OANDA nem igazolta vissza az ügylet lezárását.");
+            }
+        } catch (RestClientResponseException e) {
+            redirect.addFlashAttribute("error",
+                    "OANDA HTTP " + e.getStatusCode().value()
+                            + ". Újrapróbálás előtt ellenőrizd a nyitott ügyleteket.");
+        } catch (RestClientException e) {
+            redirect.addFlashAttribute("error",
+                    "Hiba történt az OANDA-kérésnél. Ellenőrizd a nyitott ügyleteket.");
+        }
+
+        return "redirect:/forex-zar";
+    }
 }

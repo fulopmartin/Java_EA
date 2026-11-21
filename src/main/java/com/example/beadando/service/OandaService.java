@@ -209,4 +209,30 @@ public class OandaService {
 
     public record PositionSide(String units, List<String> tradeIDs) {
     }
+    public boolean closeTrade(String tradeId) {
+        CloseTradeResponse response = restClient.put()
+                .uri("/accounts/{accountId}/trades/{tradeId}/close", accountId, tradeId)
+                .header("Authorization", "Bearer " + apiToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("units", "ALL"))
+                .retrieve()
+                .body(CloseTradeResponse.class);
+
+        if (response == null || response.orderFillTransaction() == null
+                || response.orderFillTransaction().tradesClosed() == null) {
+            return false;
+        }
+
+        return response.orderFillTransaction().tradesClosed().stream()
+                .anyMatch(trade -> tradeId.equals(trade.tradeID()));
+    }
+
+    private record CloseTradeResponse(CloseOrderFill orderFillTransaction) {
+    }
+
+    private record CloseOrderFill(List<ClosedTrade> tradesClosed) {
+    }
+
+    private record ClosedTrade(String tradeID) {
+    }
 }
